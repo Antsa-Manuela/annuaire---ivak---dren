@@ -30,7 +30,7 @@ FROM php:8.2-fpm AS backend
 # Installer les dépendances système et extensions PHP nécessaires
 RUN apt-get update && apt-get install -y \
     git curl unzip libonig-dev libzip-dev zip libpng-dev libjpeg-dev libfreetype6-dev \
-    mysql-client nodejs npm \
+    mariadb-client-compat nodejs npm \
     && docker-php-ext-install pdo pdo_mysql mbstring zip gd bcmath intl exif pcntl
 
 # Installer Composer depuis l'image officielle

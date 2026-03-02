@@ -1,7 +1,7 @@
 // ressources/js/components/AdminDashboard.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import AdminCard from './AdminCard.jsx';
+import AdminCard from './AdminCard.jsx'; // './AdminCard.jsx' est surligné en rouge, pourquoi?
 import ActivityList from './ActivityList.jsx';
 import Filters from './Filters.jsx';
 import StatsCards from './StatsCards.jsx';
