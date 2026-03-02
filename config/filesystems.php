@@ -73,4 +73,20 @@ return [
         public_path('storage') => storage_path('app/public'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Chemins des fichiers CSV
+    |--------------------------------------------------------------------------
+    |
+    | Configuration des chemins vers les fichiers CSV des établissements scolaires
+    |
+    */
+
+    'csv_public_path' => [
+        'prescolaire' => public_path('data/prescolaire.csv'),
+        'primaire' => public_path('data/niveau_I.csv'),
+        'college' => public_path('data/niveau_Ii.csv'),
+        'lycee' => public_path('data/niveau_III.csv'),
+    ],
+
 ];

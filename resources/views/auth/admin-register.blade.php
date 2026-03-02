@@ -1,91 +1,184 @@
-<x-guest-layout>
-    <div class="max-w-md mx-auto bg-white rounded-lg shadow-2xl p-8">
-        <!-- Logo et Titre -->
-        <div class="text-center mb-8">
-            <div class="mx-auto w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mb-4">
-                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription Super Administrateur</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        *{
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container-fluid vh-100">
+        <div class="row h-100">
+            <!-- Colonne de gauche - Formulaire -->
+            <div class="col-md-6 d-none d-md-flex align-items-center justify-content-center text-white" style="background: linear-gradient(135deg, #3E6E4B 50%, #9EC967 100%);">
+                <div class="text-center p-5">
+                    <!-- Section Logo -->
+                    <div class="logo-section mb-4">
+                        <img src="{{ asset('data/i.vak/super-admin-icon.png') }}" alt="Logo Annuaire Pro" class="img-fluid" style="width: 30vw;">
+                    </div>
+                </div>
             </div>
-            <h1 class="text-2xl font-bold text-gray-800">Inscription Administrateur</h1>
-            <p class="text-gray-600 mt-2">Création de compte administrateur</p>
-        </div>
+            <!-- Colonne de droite - Formulaire d'inscription -->
+            <div class="col-md-6 d-flex align-items-center justify-content-center" style="background-color: #FFF;">
+                <div class="w-100" style="max-width: 30vw; font-size: 15px">
+                    <!-- En-tête -->
+                    <div class="text-center mb-5">
+                        <!-- Section Logo -->
+                        <div class="logo-section mb-4">
+                            <img src="{{ asset('data/i.vak/logo_stage_dark1.png') }}" alt="Logo Annuaire Pro" class="img-fluid" style="width: 10vw;">
+                        </div>
+                        <h4 class="fw-bold" style="color: #3E6E4B;">Nouveau Super Administrateur</h4>
+                        <p class="text-muted">Création de compte super administrateur</p>
+                    </div>
 
-        <!-- Messages -->
-        @if ($hasActiveAdmin)
-            <div class="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg mb-6">
-                <p>Un administrateur actif existe déjà. Contactez-le pour toute modification.</p>
+                    <!-- Messages d'alerte -->
+                    @if($errors->any())
+                        <div class="alert alert-danger alert-dismissible fade show">
+                            <ul class="mb-0">
+                                @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    @endif
+
+                    @if(session('success'))
+                        <div class="alert alert-success alert-dismissible fade show">
+                            {{ session('success') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    @endif
+
+                    <!-- Formulaire -->
+                    <form method="POST" action="{{ route('super-admin.register.submit') }}">
+                        @csrf
+
+                        <!-- Champ Nom complet -->
+                        <div class="mb-3">
+                            <label for="name" class="form-label fw-semibold" style="color: #3E6E4B">Nom complet</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="bi bi-person text-muted"></i>
+                                </span>
+                                <input type="text" 
+                                       class="form-control border-start-0 px-4 py-2 @error('name') is-invalid @enderror" 
+                                       id="name" 
+                                       name="name" 
+                                       value="{{ old('name') }}" 
+                                       required 
+                                       autofocus
+                                       placeholder="Votre nom complet">
+                                @error('name')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <!-- Champ Email -->
+                        <div class="mb-3">
+                            <label for="email" class="form-label fw-semibold" style="color: #3E6E4B">Adresse mail</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="bi bi-envelope text-muted"></i>
+                                </span>
+                                <input type="email" 
+                                       class="form-control border-start-0 px-4 py-2 @error('email') is-invalid @enderror" 
+                                       id="email" 
+                                       name="email" 
+                                       value="{{ old('email') }}" 
+                                       required
+                                       placeholder="Saisir votre adresse email">
+                                @error('email')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <!-- Champ CIN -->
+                        <div class="mb-3">
+                            <label for="cin" class="form-label fw-semibold" style="color: #3E6E4B">Numéro CIN</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="bi bi-person-badge text-muted"></i>
+                                </span>
+                                <input type="text" 
+                                       class="form-control border-start-0 px-4 py-2 @error('cin') is-invalid @enderror" 
+                                       id="cin" 
+                                       name="cin" 
+                                       value="{{ old('cin') }}" 
+                                       required
+                                       placeholder="Votre CIN">
+                                @error('cin')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <!-- Champ Mot de passe -->
+                        <div class="mb-3">
+                            <label for="password" class="form-label fw-semibold" style="color: #3E6E4B">Mot de passe</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="bi bi-lock text-muted"></i>
+                                </span>
+                                <input type="password" 
+                                       class="form-control border-start-0 px-4 py-2 @error('password') is-invalid @enderror" 
+                                       id="password" 
+                                       name="password" 
+                                       required
+                                       placeholder="Saisir votre mot de passe">
+                                @error('password')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <!-- Champ Confirmation mot de passe -->
+                        <div class="mb-4">
+                            <label for="password_confirmation" class="form-label fw-semibold" style="color: #3E6E4B">Confirmer le mot de passe</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="bi bi-lock-fill text-muted"></i>
+                                </span>
+                                <input type="password" 
+                                       class="form-control border-start-0 px-4 py-2" 
+                                       id="password_confirmation" 
+                                       name="password_confirmation" 
+                                       required
+                                       placeholder="Confirmer votre mot de passe">
+                            </div>
+                        </div>
+
+                        <!-- Bouton de création de compte -->
+                        <button type="submit" class="btn btn-success w-100 px-4 py-2 mb-3 fw-semibold" style="background-color: #3E6E4B; border: none; color: #fff; border-radius: 2vw" onmouseover="this.style.backgroundColor='#8ab854'" onmouseout="this.style.backgroundColor='#3E6E4B'">
+                            Créer le compte
+                        </button>
+
+                        <!-- Liens de navigation -->
+                        <div class="text-center">
+                            <p class="text-muted mb-2">
+                                Déjà un compte ? 
+                                <a href="{{ route('super-admin.login') }}" class="text-decoration-none text-success fw-semibold">
+                                    Se connecter
+                                </a>
+                            </p>
+                            <a href="{{ route('home') }}" class="text-decoration-none text-success fw-semibold">
+                                ← Accueil
+                            </a>
+                        </div>
+                    </form>
+                </div>
             </div>
-        @endif
-
-        @if ($errors->any())
-            <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
-                <p>Erreurs de validation :</p>
-                <ul class="mt-2 list-disc list-inside text-sm">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-        <!-- Formulaire d'inscription -->
-        @if(!$hasActiveAdmin)
-            <form method="POST" action="{{ route('admin.register') }}" class="space-y-6">
-                @csrf
-
-                <!-- Champ CIN -->
-                <div>
-                    <x-input-label for="cin" :value="__('Numéro CIN *')" />
-                    <x-text-input id="cin" name="cin" type="text" class="block mt-1 w-full"
-                                  :value="old('cin')" required autofocus autocomplete="off"
-                                  placeholder="Votre numéro CIN"/>
-                    <x-input-error :messages="$errors->get('cin')" class="mt-2"/>
-                </div>
-
-                <!-- Email -->
-                <div>
-                    <x-input-label for="email" :value="__('Adresse Email *')" />
-                    <x-text-input id="email" name="email" type="email" class="block mt-1 w-full"
-                                  :value="old('email')" required autocomplete="username"
-                                  placeholder="votre@email.com"/>
-                    <x-input-error :messages="$errors->get('email')" class="mt-2"/>
-                </div>
-
-                <!-- Mot de passe -->
-                <div>
-                    <x-input-label for="password" :value="__('Mot de passe *')" />
-                    <x-text-input id="password" name="password" type="password"
-                                  class="block mt-1 w-full" required autocomplete="new-password"
-                                  placeholder="Minimum 8 caractères"/>
-                    <x-input-error :messages="$errors->get('password')" class="mt-2"/>
-                </div>
-
-                <!-- Confirmation -->
-                <div>
-                    <x-input-label for="password_confirmation" :value="__('Confirmer le mot de passe *')" />
-                    <x-text-input id="password_confirmation" name="password_confirmation" type="password"
-                                  class="block mt-1 w-full" required autocomplete="new-password"
-                                  placeholder="Confirmez votre mot de passe"/>
-                    <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2"/>
-                </div>
-
-                <div>
-                    <x-primary-button class="w-full justify-center">
-                        {{ __('Créer le compte') }}
-                    </x-primary-button>
-                </div>
-            </form>
-        @endif
-
-        <div class="mt-6 text-center">
-            <p class="text-sm text-gray-600">
-                Déjà un compte ?
-                <a href="{{ route('admin.login') }}" class="text-green-600 hover:text-green-800 font-semibold">
-                    Se connecter
-                </a>
-            </p>
         </div>
     </div>
-</x-guest-layout>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

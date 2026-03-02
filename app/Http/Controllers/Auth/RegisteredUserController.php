@@ -3,38 +3,46 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 use Illuminate\Validation\Rules;
-use Illuminate\View\View;
 
-class RegisteredUserController extends Controller
+class RegisterController extends Controller
 {
-    public function create(): View
+    /**
+     * Affiche le formulaire d'inscription
+     */
+    public function showRegistrationForm()
     {
         return view('auth.register');
     }
 
-    public function store(Request $request): RedirectResponse
+    /**
+     * Enregistre un nouvel administrateur
+     */
+    public function register(Request $request)
     {
+        // Validation du formulaire
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'cin' => ['required', 'string', 'max:20', 'unique:users'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
+        // Création de l'utilisateur
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'cin' => $request->cin,
             'password' => Hash::make($request->password),
         ]);
 
-        event(new Registered($user));
+        // Connexion automatique après inscription
         Auth::login($user);
-        return redirect(route('dashboard', absolute: false));
+
+        return redirect()->route('dashboard')->with('success', 'Compte administrateur créé avec succès !');
     }
 }

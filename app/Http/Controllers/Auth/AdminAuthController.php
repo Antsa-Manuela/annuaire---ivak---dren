@@ -1,56 +1,89 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class AdminAuthController extends Controller
 {
+    /**
+     * Afficher le formulaire de connexion admin
+     */
     public function showLoginForm()
     {
-        return view('auth.admin-login'); // Cette vue n'utilise pas de layout
-    }
-    
-    public function dashboard()
-    {
-        return view('admin.dashboard'); // Utilisera le layout admin
+        return view('auth.admin-login');
     }
 
+    /**
+     * Traiter la tentative de connexion admin
+     */
     public function login(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'cin' => 'required|string',
-            'password' => 'required|string'
+        // Validation des données
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|min:6',
+        ], [
+            'email.required' => 'L\'email est obligatoire.',
+            'email.email' => 'Veuillez entrer une adresse email valide.',
+            'password.required' => 'Le mot de passe est obligatoire.',
+            'password.min' => 'Le mot de passe doit contenir au moins 6 caractères.',
         ]);
 
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
+        // Rechercher l'admin par email
+        $admin = Admin::where('email', $request->email)->first();
+
+        // Vérifier les identifiants
+       if (!$admin || !Hash::check($request->password, $admin->password)) {
+    throw ValidationException::withMessages([
+        'email' => 'Les identifiants administrateur sont incorrects.',
+    ]);
+}
+
+
+        // Vérifier si le compte est actif
+        if (!$admin->is_active) {
+            throw ValidationException::withMessages([
+                'email' => 'Votre compte administrateur est désactivé.',
+            ]);
         }
 
-        $credentials = $request->only('cin', 'password');
+        // Connecter l'admin avec la garde 'admin'
+        Auth::guard('admin')->login($admin, $request->boolean('remember'));
+        
+        // Mettre à jour la dernière connexion
+        $admin->update(['last_login_at' => now()]);
+        
+        $request->session()->regenerate();
 
-        if (Auth::guard('admin')->attempt($credentials)) {
-            return redirect()->intended('/admin/dashboard');
-        }
-
-        return back()->withErrors([
-            'cin' => 'Les identifiants ne correspondent pas à nos enregistrements.',
-        ])->withInput();
+        // Redirection vers le dashboard admin
+        return redirect()->intended(route('admin.dashboard'))
+            ->with('success', 'Connexion réussie ! Bienvenue ' . $admin->name);
     }
 
+    /**
+     * Déconnexion admin
+     */
     public function logout(Request $request)
     {
         Auth::guard('admin')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/admin/login');
+        return redirect()->route('admin.login')
+            ->with('success', 'Vous avez été déconnecté avec succès.');
+    }
+
+    /**
+     * Tableau de bord admin
+     */
+    public function dashboard()
+    {
+        return view('admin.dashboard');
     }
 }

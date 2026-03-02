@@ -12,14 +12,19 @@ class AdminSeeder extends Seeder
     public function run(): void
     {
         Admin::create([
-            'cin' => 'ADMIN001',
-            'email' => 'admin@annuaire.com',
-            'password' => Hash::make('password123'),
+            'name' => 'Super Admin',
+            'email' => 'superadmin@test.com',
+            'password' => Hash::make('password'),
+            'role' => 'super_admin',
             'is_active' => true,
         ]);
 
-        $this->command->info('Admin créé avec succès!');
-        $this->command->info('Email: admin@annuaire.com');
-        $this->command->info('Mot de passe: password123');
+        Admin::create([
+            'name' => 'Admin',
+            'email' => 'admin@test.com',
+            'password' => Hash::make('password'),
+            'role' => 'admin',
+            'is_active' => true,
+        ]);
     }
 }

@@ -3,83 +3,59 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
 {
     /**
-     * Afficher la page de connexion
+     * Afficher le formulaire de connexion utilisateur
      */
-    public function create(): View
+    public function create()
     {
-        return view('auth.login'); // Vue de connexion commune
+        return view('auth.login');
     }
 
     /**
-     * Gérer la tentative de connexion
+     * Traiter la tentative de connexion utilisateur
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
+        // Validation des données
         $request->validate([
-            'email'    => ['required', 'string', 'email'],
-            'password' => ['required', 'string'],
+            'email' => 'required|email',
+            'password' => 'required',
         ]);
 
-        // 🔹 Tentative de connexion (web)
-        if (Auth::guard('web')->attempt(
-            $request->only('email', 'password'),
-            $request->boolean('remember')
-        )) {
-            $request->session()->regenerate();
-            return $this->authenticated($request, Auth::guard('web')->user());
+        // Rechercher l'utilisateur par email
+        $user = Admin::where('email', $request->email)->first();
+
+
+        // Vérifier les identifiants
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            throw ValidationException::withMessages([
+                'email' => __('Les identifiants sont incorrects.'),
+            ]);
         }
 
-        // 🔹 Tentative de connexion (admin)
-        if (Auth::guard('admin')->attempt(
-            $request->only('email', 'password'),
-            $request->boolean('remember')
-        )) {
-            $request->session()->regenerate();
-            return $this->authenticated($request, Auth::guard('admin')->user());
-        }
+        // Connecter l'utilisateur
+        Auth::login($user, $request->boolean('remember'));
+        $request->session()->regenerate();
 
-        // 🔹 Échec
-        throw ValidationException::withMessages([
-            'email' => __('Identifiants incorrects.'),
-        ]);
+        // Redirection vers le dashboard utilisateur
+        return redirect()->intended(route('dashboard'));
     }
 
     /**
-     * Déterminer la redirection après connexion
+     * Déconnexion utilisateur
      */
-    protected function authenticated(Request $request, $user): RedirectResponse
+    public function destroy(Request $request)
     {
-        // si c'est un admin -> redirige vers admin dashboard
-        if (property_exists($user, 'is_admin') && $user->is_admin) {
-            return redirect()->route('admin.dashboard');
-        }
-
-        // sinon -> redirige vers dashboard normal
-        return redirect()->route('dashboard');
-    }
-
-    /**
-     * Déconnexion
-     */
-    public function destroy(Request $request): RedirectResponse
-    {
-        if (Auth::guard('admin')->check()) {
-            Auth::guard('admin')->logout();
-        }
-
-        if (Auth::guard('web')->check()) {
-            Auth::guard('web')->logout();
-        }
-
+        Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
