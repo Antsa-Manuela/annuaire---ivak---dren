@@ -59,7 +59,7 @@ RUN php artisan config:clear \
 RUN chown -R www-data:www-data storage bootstrap/cache
 
 # Exposer le port PHP-FPM
-EXPOSE 9000
+EXPOSE 8080
 
 # Lancer PHP-FPM
-CMD ["php-fpm"]
+CMD php artisan serve --host=0.0.0.0 --port=8080
