@@ -50,9 +50,6 @@ COPY --from=frontend /app/public/build ./public/build
 # Installer les dépendances PHP
 RUN composer install --no-dev --optimize-autoloader
 
-# Générer la clé Laravel si nécessaire
-RUN php artisan key:generate
-
 # Nettoyer les caches Laravel
 RUN php artisan config:clear \
     && php artisan route:clear \
