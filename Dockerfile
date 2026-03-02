@@ -33,7 +33,7 @@ RUN apt-get update && apt-get install -y \
     libicu-dev \
     mariadb-client-compat nodejs npm \
     && docker-php-ext-configure intl \
-    && docker-php-ext-install pdo pdo_mysql mbstring zip gd bcmath intl exif pcntl
+    && docker-php-ext-install pdo pdo_pgsql pgsql mbstring zip gd bcmath intl exif pcntl
 
 # Installer Composer depuis l'image officielle
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
