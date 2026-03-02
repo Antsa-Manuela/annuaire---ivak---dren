@@ -1,15 +1,15 @@
 // ressources/js/components/AdminDashboard.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import AdminCard from './AdminCard';
-import ActivityList from './ActivityList';
-import Filters from './Filters';
-import StatsCards from './StatsCards';
-import ExcelExport from './ExcelExport';
-import Header from './layout/Header';
-import Sidebar from './layout/Sidebar';
-import VisitChart from './charts/VisitChart';
-import ActivityChart from './charts/ActivityChart';
+import AdminCard from './AdminCard.jsx';
+import ActivityList from './ActivityList.jsx';
+import Filters from './Filters.jsx';
+import StatsCards from './StatsCards.jsx';
+import ExcelExport from './ExcelExport.jsx';
+import Header from './layout/Header.jsx';
+import Sidebar from './layout/Sidebar.jsx';
+import VisitChart from './charts/VisitChart.jsx';
+import ActivityChart from './charts/ActivityChart.jsx';
 
 const AdminDashboard = () => {
     const [dashboardData, setDashboardData] = useState(null);
