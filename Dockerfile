@@ -1,39 +1,66 @@
-# Étape 1 : Node + PHP
-FROM node:22-alpine AS node-build
+# =======================================
+# Dockerfile multi-stage Laravel + React
+# =======================================
 
-WORKDIR /var/www/html
+# ==========================
+# Stage 1 - Build Frontend
+# ==========================
+FROM node:18 AS frontend
 
-# Copier les fichiers
+# Répertoire de travail pour Node
+WORKDIR /app
+
+# Copier package.json et package-lock.json pour installer les dépendances
+COPY package*.json ./
+
+# Installer les dépendances Node
+RUN npm install
+
+# Copier le reste du projet frontend
 COPY . .
 
-# Installer Node et build Vite
-RUN npm install
+# Construire le frontend avec Vite
 RUN npm run build
 
-# Étape 2 : PHP + Composer
-FROM php:8.2-fpm-alpine
+# ==========================
+# Stage 2 - Backend Laravel + PHP
+# ==========================
+FROM php:8.2-fpm AS backend
 
-WORKDIR /var/www/html
+# Installer les dépendances système et extensions PHP nécessaires
+RUN apt-get update && apt-get install -y \
+    git curl unzip libonig-dev libzip-dev zip libpng-dev libjpeg-dev libfreetype6-dev \
+    mysql-client nodejs npm \
+    && docker-php-ext-install pdo pdo_mysql mbstring zip gd bcmath intl exif pcntl
 
-# Installer extensions PHP
-RUN apk add --no-cache bash git unzip curl libpng-dev libjpeg-turbo-dev freetype-dev oniguruma-dev icu-dev mysql-client \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath intl gd
-
-# Installer Composer
+# Installer Composer depuis l'image officielle
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Copier les fichiers buildés de Node
-COPY --from=node-build /var/www/html /var/www/html
+# Définir le répertoire de travail
+WORKDIR /var/www/html
 
-# Installer dépendances PHP
+# Copier tous les fichiers de l'application
+COPY . .
+
+# Copier le build frontend depuis Stage 1
+COPY --from=frontend /app/public/dist ./public/dist
+
+# Installer les dépendances PHP
 RUN composer install --no-dev --optimize-autoloader
 
-# Générer clé Laravel
+# Générer la clé Laravel si nécessaire
 RUN php artisan key:generate
 
-# Permissions
+# Nettoyer les caches Laravel
+RUN php artisan config:clear \
+    && php artisan route:clear \
+    && php artisan view:clear
+
+# Permissions pour storage et cache
 RUN chown -R www-data:www-data storage bootstrap/cache
 
+# Exposer le port PHP-FPM
 EXPOSE 9000
 
+# Lancer PHP-FPM
 CMD ["php-fpm"]
