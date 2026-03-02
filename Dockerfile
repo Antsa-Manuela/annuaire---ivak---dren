@@ -43,7 +43,7 @@ WORKDIR /var/www/html
 COPY . .
 
 # Copier le build frontend depuis Stage 1
-COPY --from=frontend /app/public/dist ./public/dist
+COPY --from=frontend /app/public/build ./public/build
 
 # Installer les dépendances PHP
 RUN composer install --no-dev --optimize-autoloader
