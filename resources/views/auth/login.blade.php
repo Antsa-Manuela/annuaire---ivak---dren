@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- resources/views/auth/login.blade.php -->
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
