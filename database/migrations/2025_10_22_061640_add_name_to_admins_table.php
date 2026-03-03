@@ -8,15 +8,21 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::table('admins', function (Blueprint $table) {
-            $table->string('name')->nullable()->after('id');
-        });
+        // Vérifie si la colonne n'existe pas déjà avant de l'ajouter
+        if (!Schema::hasColumn('admins', 'name')) {
+            Schema::table('admins', function (Blueprint $table) {
+                $table->string('name')->nullable()->after('id');
+            });
+        }
     }
 
     public function down()
     {
-        Schema::table('admins', function (Blueprint $table) {
-            $table->dropColumn('name');
-        });
+        // Vérifie si la colonne existe avant de la supprimer
+        if (Schema::hasColumn('admins', 'name')) {
+            Schema::table('admins', function (Blueprint $table) {
+                $table->dropColumn('name');
+            });
+        }
     }
 };
