@@ -25,7 +25,7 @@ RUN npm run build
 # ==========================
 # Stage 2 - Backend Laravel + PHP
 # ==========================
-FROM php:8.2-fpm AS backend
+FROM php:8.2-cli AS backend
 
 # Installer les dépendances système et extensions PHP nécessaires
 RUN apt-get update && apt-get install -y \
