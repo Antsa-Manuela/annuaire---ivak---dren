@@ -11,11 +11,32 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('admins', function (Blueprint $table) {
-            $table->enum('role', ['super_admin', 'admin'])->default('admin')->after('password');
-            $table->timestamp('last_login_at')->nullable()->after('role');
-            $table->boolean('is_active')->default(true)->after('last_login_at');
-        });
+        // Ajouter 'role' si elle n'existe pas
+        if (!Schema::hasColumn('admins', 'role')) {
+            Schema::table('admins', function (Blueprint $table) {
+                $table->enum('role', ['super_admin', 'admin'])
+                      ->default('admin')
+                      ->after('password');
+            });
+        }
+
+        // Ajouter 'last_login_at' si elle n'existe pas
+        if (!Schema::hasColumn('admins', 'last_login_at')) {
+            Schema::table('admins', function (Blueprint $table) {
+                $table->timestamp('last_login_at')
+                      ->nullable()
+                      ->after('role');
+            });
+        }
+
+        // Ajouter 'is_active' si elle n'existe pas
+        if (!Schema::hasColumn('admins', 'is_active')) {
+            Schema::table('admins', function (Blueprint $table) {
+                $table->boolean('is_active')
+                      ->default(true)
+                      ->after('last_login_at');
+            });
+        }
     }
 
     /**
@@ -23,8 +44,25 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('admins', function (Blueprint $table) {
-            $table->dropColumn(['role', 'last_login_at', 'is_active']);
-        });
+        // Supprimer 'is_active' si elle existe
+        if (Schema::hasColumn('admins', 'is_active')) {
+            Schema::table('admins', function (Blueprint $table) {
+                $table->dropColumn('is_active');
+            });
+        }
+
+        // Supprimer 'last_login_at' si elle existe
+        if (Schema::hasColumn('admins', 'last_login_at')) {
+            Schema::table('admins', function (Blueprint $table) {
+                $table->dropColumn('last_login_at');
+            });
+        }
+
+        // Supprimer 'role' si elle existe
+        if (Schema::hasColumn('admins', 'role')) {
+            Schema::table('admins', function (Blueprint $table) {
+                $table->dropColumn('role');
+            });
+        }
     }
 };
