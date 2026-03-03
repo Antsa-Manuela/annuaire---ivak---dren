@@ -31,7 +31,6 @@ FROM php:8.2-cli AS backend
 RUN apt-get update && apt-get install -y \
     git curl unzip libonig-dev libzip-dev zip libpng-dev libjpeg-dev libfreetype6-dev \
     libicu-dev libpq-dev \
-    nodejs npm \
     && docker-php-ext-configure intl \
     && docker-php-ext-install pdo pdo_pgsql pgsql mbstring zip gd bcmath intl exif pcntl
 
