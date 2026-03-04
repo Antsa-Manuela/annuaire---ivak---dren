@@ -26,6 +26,7 @@ class RegisterController extends Controller
      */
     public function register(Request $request)
     {
+        dd('POST OK');
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'cin' => ['required', 'string', 'max:255', 'unique:admins'],
