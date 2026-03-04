@@ -26,7 +26,7 @@ class RegisterController extends Controller
      */
     public function register(Request $request)
     {
-        dd('POST OK');
+        // dd('POST OK');
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'cin' => ['required', 'string', 'max:255', 'unique:admins'],
@@ -35,10 +35,12 @@ class RegisterController extends Controller
         ]);
 
         try {
+            dd($request->all());
             DB::beginTransaction();
 
             // Création d'un administrateur avec statut inactif
             $admin = Admin::create([
+                'name' => $request->name,
                 'cin' => $request->cin,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
