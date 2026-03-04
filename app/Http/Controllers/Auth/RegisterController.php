@@ -35,16 +35,16 @@ class RegisterController extends Controller
         ]);
 
         try {
-            dd($request->all());
+            // dd($request->all());
             DB::beginTransaction();
 
             // Création d'un administrateur avec statut inactif
             $admin = Admin::create([
-                'name' => $request->name,
+                'name' => $request->name,   // 👈 AJOUTE ÇA
                 'cin' => $request->cin,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
-                'is_active' => false, // Le compte doit être validé par le super admin
+                'is_active' => false,
             ]);
 
             DB::commit();
