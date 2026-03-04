@@ -6,7 +6,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\AdminAuthController;
-use App\Http\Controllers\DashboardExportController;
+// use App\Http\Controllers\DashboardExportController;
 use App\Http\Controllers\DataController;
 use App\Http\Controllers\ImportController;
 
@@ -196,7 +196,7 @@ Route::post('/register', [RegisterController::class, 'register'])->name('registe
 // ============================================
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/dashboard/export', [DashboardExportController::class, 'export'])->name('dashboard.export');
+    // Route::get('/dashboard/export', [DashboardExportController::class, 'export'])->name('dashboard.export');
     
     // Routes d'importation protégées
     Route::post('/import/csv', [ImportController::class, 'importCSV'])->name('import.csv');
@@ -222,7 +222,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Routes protégées admin - AJOUT du middleware 'admin.active'
     Route::middleware(['auth:admin', 'admin.active'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-        Route::get('/dashboard/export', [DashboardExportController::class, 'export'])->name('dashboard.export');
+        //Route::get('/dashboard/export', [DashboardExportController::class, 'export'])->name('dashboard.export');
         Route::post('/import/csv', [ImportController::class, 'importCSV'])->name('import.csv');
         Route::get('/import/template/{niveau}', [ImportController::class, 'downloadTemplate'])->name('import.template');
 
